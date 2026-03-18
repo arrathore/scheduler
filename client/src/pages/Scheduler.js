@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
 import '../App.css'
+import CalendarView from '../components/CalendarView';
 
 function Scheduler() {
-
     // user tasks
     const [tasks, setTasks] = useState([{ name: '', deadline: '', hours: '' }]);
     const updateTask = (index, field, value) => { // update the task at index
@@ -33,7 +33,8 @@ function Scheduler() {
 	max_hours_per_day: 6
     });
 
-    // send data to backend
+    // generated schedule
+    const [schedule, setSchedule]= useState([]);
     const handleSubmit = async (e) => {
 	e.preventDefault();
 
@@ -93,8 +94,8 @@ function Scheduler() {
 	    });
 
 	    const data = await res.json();
-
 	    console.log("received schedule: ", data);
+	    setSchedule(data.schedule);
 	    
 	} catch (err) {
 	    console.error("error:", err);
@@ -220,6 +221,8 @@ function Scheduler() {
     <button type="submit">Generate Schedule</button>
     
   </form>
+
+  <CalendarView schedule={schedule} events={events} />
 </div>
   );    
 }
