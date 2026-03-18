@@ -80,6 +80,25 @@ function Scheduler() {
 	};
 
 	console.log("sending: ", payload);
+
+	// send to backend
+	try {
+	    const res = await fetch('/generate_schedule', {
+		method: 'POST',
+		headers: {
+		    'Content-Type': 'application/json'
+		},
+		credentials: 'include',
+		body: JSON.stringify(payload)
+	    });
+
+	    const data = await res.json();
+
+	    console.log("received schedule: ", data);
+	    
+	} catch (err) {
+	    console.error("error:", err);
+	}
 	
     };
 
