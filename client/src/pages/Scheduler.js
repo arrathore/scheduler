@@ -37,7 +37,47 @@ function Scheduler() {
     const handleSubmit = async (e) => {
 	e.preventDefault();
 
-	const payload = {tasks, events, constraints};
+	// clean data
+	const cleanedTasks = tasks
+	      .filter(t => t.name && t.deadline && t.hours)
+	      .map(t => ({
+		  name: t.name,
+		  deadline: t.deadline,
+		  hours: parseFloat(t.hours)
+	      }));
+
+	const cleanedEvents = events
+	      .filter(e => e.date && e.start && e.end)
+	      .map(e => ({
+		  name: e.name || "Busy",
+		  start: `${e.date}T${e.end}`,
+		  end: `${e.date}T${e.end}`
+	      }));
+
+	// compute scheduling range
+	const today = new Date();
+	const deadlines = cleanedTasks.map(t => new Date(t.deadline));
+
+	if (deadlines.length === 0) {
+	    alert("add at least one valid task");
+	    return;
+	}
+
+	const lastDeadline = new Date(Math.max(...deadlines));
+
+	// normalize times
+	const startDate = today.toISOString().split('T')[0];
+	const endDate = lastDeadline.toISOString().split('T')[0];
+
+	const payload = {
+	    tasks: cleanedTasks,
+	    events: cleanedEvents,
+	    constraints,
+	    range: {
+		start: startDate,
+		end: endDate
+	    }
+	};
 
 	console.log("sending: ", payload);
 	
@@ -92,7 +132,13 @@ function Scheduler() {
 	onChange={(e) => updateEvent(index, 'name', e.target.value)}
       required
       />
-      
+
+      <input
+	type="date"
+	value={event.date}
+	onChange={(e) => updateEvent(index, 'date', e.target.value)}
+      required
+      />
 
       <input
 	type="time"
