@@ -17,7 +17,7 @@ def generate_time_slots(start_date, end_date, constraints):
             minute=0
         )
         day_end = current.replace(
-            hour=int(constraints["work_end"].split(":"[0])),
+            hour=int(constraints["work_end"].split(":")[0]),
             minute=0
         )
         day_end = current.replace(
@@ -46,4 +46,6 @@ def apply_events(slots, events):
             # if an slot ends before an event starts or if it starts after the event ends, it is available
             if not (slot["end"] <= event.start or slot["start"] >= event.end):
                 slot["available"] = False
+
+    return slots
 
